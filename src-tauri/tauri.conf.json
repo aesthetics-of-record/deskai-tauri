@@ -37,7 +37,13 @@
   },
   "plugins": {
     "shell": {
-      "open": true
+      "all": true
+    },
+    "http": {
+      "scope": [
+        "http://**",
+        "https://**"
+      ]
     }
   }
 }
