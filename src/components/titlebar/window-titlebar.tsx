@@ -1,11 +1,9 @@
-'use client';
-
+import { Close, Maximize, Minimize } from '@/icons/titlebar';
 import { useEffect, useState } from 'react';
 
 const WindowTitlebar = () => {
   const [appWindow, setAppWindow] = useState<any>();
 
-  // Import appWindow and save it inside the state for later usage
   async function setupAppWindow() {
     const appWindow = (await import('@tauri-apps/api/window')).appWindow;
     setAppWindow(appWindow);
@@ -26,7 +24,7 @@ const WindowTitlebar = () => {
             appWindow.minimize();
           }}
         >
-          -
+          <Minimize />
         </div>
         <div
           className='rounded-full flex items-center justify-center cursor-pointer'
@@ -34,15 +32,15 @@ const WindowTitlebar = () => {
             appWindow.toggleMaximize();
           }}
         >
-          +
+          <Maximize />
         </div>
         <div
-          className='rounded-full flex items-center justify-center cursor-pointer'
+          className='flex items-center justify-center cursor-pointer hover:bg-primary'
           onClick={() => {
             appWindow.hide();
           }}
         >
-          x
+          <Close />
         </div>
       </div>
     </div>

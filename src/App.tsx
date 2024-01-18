@@ -1,15 +1,35 @@
-import { invoke } from '@tauri-apps/api/core';
 import { Button } from './components/ui/button';
+import { createBrowserRouter, Outlet, RouterProvider } from 'react-router-dom';
+import { BrowserRouter } from 'react-router-dom';
 import WindowTitlebar from './components/titlebar/window-titlebar';
+import Home from './pages/home';
+
+const router = createBrowserRouter([
+  {
+    path: '/',
+    element: <Home />,
+    // loader: rootLoader,
+    children: [
+      {
+        path: 'ai',
+        element: <div>ai</div>,
+      },
+      {
+        path: 'setting',
+        element: <div>setting</div>,
+      },
+      {
+        path: 'dashboard',
+        element: <div>dashboard</div>,
+      },
+    ],
+  },
+]);
 
 function App() {
   return (
     <>
-      <WindowTitlebar />
-      <div className='container'>
-        <h1 className='text-3xl font-bold underline'>Hello world!</h1>
-        <Button>안녕</Button>
-      </div>
+      <RouterProvider router={router} />
     </>
   );
 }
