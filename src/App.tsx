@@ -1,25 +1,30 @@
-import { Button } from './components/ui/button';
-import { createBrowserRouter, Outlet, RouterProvider } from 'react-router-dom';
-import { BrowserRouter } from 'react-router-dom';
-import WindowTitlebar from './components/titlebar/window-titlebar';
-import Home from './pages/home';
+import { Button } from "./components/ui/button";
+import { createBrowserRouter, Outlet, RouterProvider } from "react-router-dom";
+import { BrowserRouter } from "react-router-dom";
+import WindowTitlebar from "./components/titlebar/window-titlebar";
+import Layout from "./components/global/layout";
+import { ThemeProvider } from "./providers/theme-provider";
 
 const router = createBrowserRouter([
   {
-    path: '/',
-    element: <Home />,
+    path: "/",
+    element: <Layout />,
     // loader: rootLoader,
     children: [
       {
-        path: 'ai',
+        index: true,
+        element: <div>Home Page Content</div>,
+      },
+      {
+        path: "ai",
         element: <div>ai</div>,
       },
       {
-        path: 'setting',
+        path: "setting",
         element: <div>setting</div>,
       },
       {
-        path: 'dashboard',
+        path: "dashboard",
         element: <div>dashboard</div>,
       },
     ],
@@ -29,7 +34,9 @@ const router = createBrowserRouter([
 function App() {
   return (
     <>
-      <RouterProvider router={router} />
+      <ThemeProvider defaultTheme="dark" storageKey="deskai-ui-theme">
+        <RouterProvider router={router} />
+      </ThemeProvider>
     </>
   );
 }

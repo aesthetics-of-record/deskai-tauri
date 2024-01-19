@@ -1,5 +1,5 @@
-import { Link } from 'react-router-dom';
-import { twMerge } from 'tailwind-merge';
+import { Link } from "react-router-dom";
+import { twMerge } from "tailwind-merge";
 
 interface SidebarItemProps {
   icon: any;
@@ -46,11 +46,11 @@ const SidebarItem: React.FC<SidebarItemProps> = ({
   
     `,
         active &&
-          'text-primary hover:text-primary dark:text-primary dark:hover:text-primary'
+          "text-primary hover:text-primary dark:text-primary dark:hover:text-primary"
       )}
     >
-      <Icon />
-      <p className='truncate w-full'>{label}</p>
+      <Icon className="text-2xl" />
+      <p className="truncate w-full">{label}</p>
     </Link>
   );
 };
