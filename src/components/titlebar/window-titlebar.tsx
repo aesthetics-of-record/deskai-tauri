@@ -19,7 +19,7 @@ const WindowTitlebar = () => {
 
       <div className='flex gap-x-2'>
         <div
-          className='rounded-full flex justify-center cursor-pointer'
+          className='rounded flex justify-center cursor-pointer hover:text-slate-400'
           onClick={() => {
             appWindow.minimize();
           }}
@@ -27,7 +27,7 @@ const WindowTitlebar = () => {
           <Minimize />
         </div>
         <div
-          className='rounded-full flex items-center justify-center cursor-pointer'
+          className='rounded flex items-center justify-center cursor-pointer hover:text-slate-400'
           onClick={() => {
             appWindow.toggleMaximize();
           }}
@@ -35,7 +35,7 @@ const WindowTitlebar = () => {
           <Maximize />
         </div>
         <div
-          className='flex items-center justify-center cursor-pointer hover:bg-primary'
+          className='rounded flex items-center justify-center cursor-pointer hover:text-slate-400'
           onClick={() => {
             appWindow.hide();
           }}
