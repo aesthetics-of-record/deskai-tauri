@@ -1,4 +1,4 @@
 import axios from 'axios';
 import axiosTauriApiAdapter from 'axios-tauri-api-adapter';
 
-export const client = axios.create({ adapter: axiosTauriApiAdapter });
+export const axiosClient = axios.create({ adapter: axiosTauriApiAdapter });

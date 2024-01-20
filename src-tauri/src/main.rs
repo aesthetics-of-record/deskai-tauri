@@ -14,10 +14,10 @@ struct Payload {
 fn main() {
     ///////////////////////////////////////////////////////////
     // FastAPI 서버 시작
-    let mut server: Child = Command::new("python")
-        .arg("server.py")
-        .spawn()
-        .expect("failed to start FastAPI server");
+    let mut server: Child =
+        Command::new("C:/Users/cho/Documents/GitHub/deskai-tauri/src-tauri/server.exe")
+            .spawn()
+            .expect("failed to start FastAPI server");
     ///////////////////////////////////////////////////////////
 
     let quit = CustomMenuItem::new("quit".to_string(), "끝내기");
