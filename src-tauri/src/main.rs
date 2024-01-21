@@ -13,11 +13,8 @@ struct Payload {
 
 fn main() {
     ///////////////////////////////////////////////////////////
-    // FastAPI 서버 시작
-    let mut server: Child =
-        Command::new("C:/Users/cho/Documents/GitHub/deskai-tauri/src-tauri/server.exe")
-            .spawn()
-            .expect("failed to start FastAPI server");
+    // FastAPI 서버
+    let mut server: Option<Child> = None;
     ///////////////////////////////////////////////////////////
 
     let quit = CustomMenuItem::new("quit".to_string(), "끝내기");
@@ -26,6 +23,28 @@ fn main() {
         .add_item(quit);
 
     tauri::Builder::default()
+        .setup(|app| {
+            let main_window = app.get_window("main").unwrap();
+
+            let start = main_window.listen("start_server", |event| {
+                // println!("got window event-name with payload {:?}", event.payload());
+                let child =
+                    Command::new("C:/Users/cho/Documents/GitHub/deskai-tauri/src-tauri/server.exe")
+                        .spawn()
+                        .expect("failed to start FastAPI server");
+                server = Some(child)
+            });
+
+            let stop = main_window.listen("stop_server", |event| {
+                println!("got window event-name with payload {:?}", event.payload());
+            });
+            // unlisten to the event using the `id` returned on the `listen` function
+            // an `once` API is also exposed on the `Window` struct
+            main_window.unlisten(start);
+            main_window.unlisten(stop);
+
+            Ok(())
+        })
         .plugin(tauri_plugin_single_instance::init(|app, argv, cwd| {
             println!("{}, {argv:?}, {cwd}", app.package_info().name);
 
@@ -56,7 +75,4 @@ fn main() {
         })
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
-
-    // 애플리케이션이 종료될 때 서버도 함께 종료
-    server.kill().expect("failed to kill FastAPI server");
 }

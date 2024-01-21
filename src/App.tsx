@@ -1,7 +1,7 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import Layout from './components/global/layout';
 import { ThemeProvider } from './providers/theme-provider';
-import LoginProvider from './providers/login-provider';
+import { RecoilRoot } from 'recoil';
 
 const router = createBrowserRouter([
   {
@@ -32,11 +32,13 @@ const router = createBrowserRouter([
 function App() {
   return (
     <>
-      <ThemeProvider defaultTheme='dark' storageKey='deskai-ui-theme'>
-        <LoginProvider>
-          <RouterProvider router={router} />
-        </LoginProvider>
-      </ThemeProvider>
+      <RecoilRoot>
+        <ThemeProvider defaultTheme='dark' storageKey='deskai-ui-theme'>
+        
+            <RouterProvider router={router} />
+          
+        </ThemeProvider>
+      </RecoilRoot>
     </>
   );
 }

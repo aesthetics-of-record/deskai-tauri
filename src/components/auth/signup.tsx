@@ -16,10 +16,15 @@ import { supabase } from '@/lib/supabase/db';
 import { ClipLoader } from 'react-spinners';
 import { useRecoilState } from 'recoil';
 import { loginComponentState } from '@/recoil/store';
+import { useNavigate } from 'react-router-dom';
+import { useToast } from '../ui/use-toast';
 
 const Signup = () => {
   const [loginComponent, setLoginComponent] =
     useRecoilState(loginComponentState);
+
+  const navigate = useNavigate();
+  const { toast } = useToast();
 
   const form = useForm<z.infer<typeof SignUpFormSchema>>({
     mode: 'onChange',
@@ -47,10 +52,23 @@ const Signup = () => {
     email,
     password,
   }: z.infer<typeof SignInFormSchema>) => {
-    const { error } = await signUpNewUser({ email, password });
+    const { data, error } = await signUpNewUser({ email, password });
 
-    if (error) {
-      form.reset();
+    console.log(error);
+    // console.log(data.user?.app_metadata.aud);
+    console.log(data);
+
+    if (error || data.user?.app_metadata.aud === 'authenticated') {
+      toast({
+        title: '회원가입 중 오류 발생',
+        description: '이미 회원가입 된 아이디거나, 다른 문제입니다.',
+      });
+      // form.reset();
+      return;
+    }
+
+    if (!error) {
+      setLoginComponent('signin');
       return;
     }
 

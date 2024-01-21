@@ -1,4 +1,4 @@
-import { userState } from '@/lib/store';
+import { userState } from '@/recoil/store';
 import { supabase } from '@/lib/supabase/db';
 import { useEffect } from 'react';
 import { useRecoilState } from 'recoil';
@@ -12,7 +12,7 @@ const useUserWithRefresh = () => {
     } = await supabase.auth.getUser();
     console.log(user);
 
-    setUser(user);
+    if (user) setUser(user);
   };
 
   useEffect(() => {
