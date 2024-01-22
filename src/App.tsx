@@ -2,6 +2,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import Layout from './components/global/layout';
 import { ThemeProvider } from './providers/theme-provider';
 import { RecoilRoot } from 'recoil';
+import AiChatPage from './pages/ai-chat-page';
 
 const router = createBrowserRouter([
   {
@@ -15,7 +16,7 @@ const router = createBrowserRouter([
       },
       {
         path: 'ai',
-        element: <div>ai</div>,
+        element: <AiChatPage />,
       },
       {
         path: 'setting',
@@ -34,9 +35,7 @@ function App() {
     <>
       <RecoilRoot>
         <ThemeProvider defaultTheme='dark' storageKey='deskai-ui-theme'>
-        
-            <RouterProvider router={router} />
-          
+          <RouterProvider router={router} />
         </ThemeProvider>
       </RecoilRoot>
     </>

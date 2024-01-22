@@ -11,7 +11,7 @@ import {
 } from '../ui/form';
 import { Input } from '../ui/input';
 import * as z from 'zod';
-import ButtonPrimary from '../custom/button-gradient';
+import ButtonPrimary from '../custom/button-primary';
 import { supabase } from '@/lib/supabase/db';
 import { ClipLoader } from 'react-spinners';
 import useUserWithRefresh from '@/hooks/useUserWithRefresh';
@@ -21,8 +21,8 @@ import { useNavigate } from 'react-router-dom';
 
 const Signin = () => {
   const navigate = useNavigate();
-  const { user, refreshUser } = useUserWithRefresh();
-  const [loginComponent, setLoginComponent] =
+  const { user: _user, refreshUser } = useUserWithRefresh();
+  const [_loginComponent, setLoginComponent] =
     useRecoilState(loginComponentState);
 
   const form = useForm<z.infer<typeof SignInFormSchema>>({

@@ -16,7 +16,7 @@ const ButtonPrimary: React.FC<ButtonPrimaryProps> = ({
     <button
       {...props}
       className={cn(
-        'rounded text-primary-foreground py-1 px-4 bg-gradient-to-r from-primary via-pink-600  to-blue-600 transition duration-300 hover:shadow-md hover:shadow-slate-700 active:scale-95',
+        'rounded text-primary-foreground py-1 px-4 bg-primary transition duration-300 hover:bg-primary/60 active:scale-95',
         className
       )}
     >

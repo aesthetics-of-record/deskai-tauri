@@ -7,7 +7,7 @@ import { loginComponentState } from '@/recoil/store';
 
 const LoginProvider = ({ children }: { children: React.ReactNode }) => {
   const { user } = useUserWithRefresh();
-  const [loginComponent, setLoginComponent] =
+  const [loginComponent, _setLoginComponent] =
     useRecoilState(loginComponentState);
 
   if (!user) {

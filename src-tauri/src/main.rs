@@ -2,6 +2,8 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 use std::process::{Child, Command};
+use std::sync::{Arc, Mutex};
+
 use tauri::Manager;
 use tauri::{CustomMenuItem, SystemTray, SystemTrayEvent, SystemTrayMenu, SystemTrayMenuItem};
 
@@ -13,8 +15,8 @@ struct Payload {
 
 fn main() {
     ///////////////////////////////////////////////////////////
-    // FastAPI 서버
-    let mut server: Option<Child> = None;
+    // FastAPI 서버를 관리하기 위한 Arc<Mutex> 구조체
+    let server = Arc::new(Mutex::new(None));
     ///////////////////////////////////////////////////////////
 
     let quit = CustomMenuItem::new("quit".to_string(), "끝내기");
@@ -23,27 +25,54 @@ fn main() {
         .add_item(quit);
 
     tauri::Builder::default()
-        .setup(|app| {
-            let main_window = app.get_window("main").unwrap();
+        .setup({
+            let server = Arc::clone(&server); // `server` 변수의 클론을 생성합니다.
 
-            let start = main_window.listen("start_server", |event| {
-                // println!("got window event-name with payload {:?}", event.payload());
-                let child =
-                    Command::new("C:/Users/cho/Documents/GitHub/deskai-tauri/src-tauri/server.exe")
+            move |app| {
+                let server_clone = Arc::clone(&server); // `start-server` 클로저용 클론
+                let start = app.listen_global("start-server", move |event| {
+                    println!("스타트 서버 {:?}", event.payload());
+                    let mut server_clone = server_clone.lock().unwrap(); // Mutex 잠금을 획득합니다.
+                    *server_clone = Some(
+                        Command::new(
+                            "C:/Users/cho/Documents/GitHub/deskai-tauri/src-tauri/server.exe",
+                        )
                         .spawn()
-                        .expect("failed to start FastAPI server");
-                server = Some(child)
-            });
+                        .expect("failed to start FastAPI server"),
+                    );
+                });
 
-            let stop = main_window.listen("stop_server", |event| {
-                println!("got window event-name with payload {:?}", event.payload());
-            });
-            // unlisten to the event using the `id` returned on the `listen` function
-            // an `once` API is also exposed on the `Window` struct
-            main_window.unlisten(start);
-            main_window.unlisten(stop);
+                // let server_clone = Arc::clone(&server); // `start-server` 클로저용 클론
+                // let stop = app.listen_global("stop-server", move |event| {
+                //     println!("서버 끄기 {:?}", event.payload());
+                //     let mut server_clone = server_clone.lock().unwrap(); // Mutex 잠금을 획득합니다.
 
-            Ok(())
+                //     if let Some(mut child) = server_clone.take() {
+                //         // server에서 Child 인스턴스를 가져옵니다.
+                //         match child.kill() {
+                //             // Child 프로세스를 종료합니다.
+                //             Ok(_) => {
+                //                 println!("서버가 성공적으로 종료되었습니다.");
+                //                 match child.wait() {
+                //                     // 프로세스가 완전히 종료되기를 기다립니다.
+                //                     Ok(_) => println!("서버 프로세스가 완전히 종료되었습니다."),
+                //                     Err(e) => eprintln!("서버 프로세스 종료 대기 중 에러: {}", e),
+                //                 }
+                //             }
+                //             Err(e) => eprintln!("서버 종료 중 에러 발생: {}", e),
+                //         }
+                //     } else {
+                //         println!("서버가 이미 종료되었거나 시작되지 않았습니다.");
+                //     }
+                // });
+
+                // unlisten to the event using the `id` returned on the `listen` function
+                // an `once` API is also exposed on the `Window` struct
+                // app.unlisten(start);
+                // app.unlisten(stop);
+
+                Ok(())
+            }
         })
         .plugin(tauri_plugin_single_instance::init(|app, argv, cwd| {
             println!("{}, {argv:?}, {cwd}", app.package_info().name);

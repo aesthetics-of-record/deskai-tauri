@@ -11,19 +11,17 @@ import {
 } from '../ui/form';
 import { Input } from '../ui/input';
 import * as z from 'zod';
-import ButtonPrimary from '../custom/button-gradient';
+import ButtonPrimary from '../custom/button-primary';
 import { supabase } from '@/lib/supabase/db';
 import { ClipLoader } from 'react-spinners';
 import { useRecoilState } from 'recoil';
 import { loginComponentState } from '@/recoil/store';
-import { useNavigate } from 'react-router-dom';
 import { useToast } from '../ui/use-toast';
 
 const Signup = () => {
-  const [loginComponent, setLoginComponent] =
+  const [_loginComponent, setLoginComponent] =
     useRecoilState(loginComponentState);
 
-  const navigate = useNavigate();
   const { toast } = useToast();
 
   const form = useForm<z.infer<typeof SignUpFormSchema>>({
