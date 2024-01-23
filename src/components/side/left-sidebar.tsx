@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils";
 import { Separator } from "../ui/separator";
 import SidebarItem from "./SidebarItem";
 import { useLocation } from "react-router-dom";
-import { Chat, ColorPalette, Dashboard, Robot, Settings } from "@/icons/global";
+import { Chat, ColorPalette, Dashboard, Extensions, Robot, Settings } from "@/icons/global";
 import { ModeToggle } from "../global/mode-toggle";
 
 interface LeftSidebarProps {
@@ -33,6 +33,12 @@ const LeftSidebar: React.FC<LeftSidebarProps> = ({ className }) => {
         active: location.pathname === "/ai",
         href: "/ai",
       },
+      {
+        icon: Extensions,
+        label: "Extensions",
+        active: location.pathname === "/extensions",
+        href: "/extensions"
+      }
     ],
     [location]
   );

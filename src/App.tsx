@@ -3,6 +3,7 @@ import Layout from './components/global/layout';
 import { ThemeProvider } from './providers/theme-provider';
 import { RecoilRoot } from 'recoil';
 import AiChatPage from './pages/ai-chat-page';
+import PromptSettingPage from './pages/prompt-setting-page';
 
 const router = createBrowserRouter([
   {
@@ -20,11 +21,15 @@ const router = createBrowserRouter([
       },
       {
         path: 'setting',
-        element: <div>setting</div>,
+        element: <PromptSettingPage />,
       },
       {
         path: 'dashboard',
         element: <div>dashboard</div>,
+      },
+      {
+        path: 'extensions',
+        element: <div>extensions</div>,
       },
     ],
   },

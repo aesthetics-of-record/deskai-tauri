@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { cn } from '@/lib/utils';
 import { Separator } from '../ui/separator';
 import { Link, useLocation } from 'react-router-dom';
-import { Chat, Dashboard, Robot, Settings } from '@/icons/global';
+import { Chat, Dashboard, Extensions, Robot, Settings } from '@/icons/global';
 import { ModeToggle } from '../global/mode-toggle';
 interface LeftSidebarProps {
   className?: string;
@@ -30,6 +30,12 @@ const LeftSidebarSm: React.FC<LeftSidebarProps> = ({ className }) => {
         label: 'AI',
         active: location.pathname === '/ai',
         href: '/ai',
+      },
+      {
+        icon: Extensions,
+        label: 'Extensions',
+        active: location.pathname === '/extensions',
+        href: '/extensions',
       },
     ],
     [location]

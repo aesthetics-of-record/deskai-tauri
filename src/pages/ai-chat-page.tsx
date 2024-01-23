@@ -7,9 +7,11 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
+import { commandServerUrl } from '@/config/urls';
 import useCommandServer from '@/hooks/useCommandServer';
 import useExists from '@/hooks/useExists';
 import { RobotDead, RobotExcited } from '@/icons/ai-chat';
+import { axiosClient } from '@/lib/axios-tauri-client';
 import downloadAndSaveFile from '@/lib/download-and-save-file';
 import { emit } from '@tauri-apps/api/event';
 import { BaseDirectory, createDir, removeDir } from '@tauri-apps/api/fs';
@@ -25,11 +27,15 @@ const AiChatPage = () => {
     useState<boolean>(false);
   const { commandServerStatus, checkCommandServerStatus } = useCommandServer();
 
+  const [result, setResult] = useState<string | null>(null);
   const onStartServer = async () => {
     setCommandServerLoading(true);
     await emit('start-server');
-    checkCommandServerStatus();
-    setCommandServerLoading(false);
+
+    setTimeout(() => {
+      checkCommandServerStatus();
+      setCommandServerLoading(false);
+    }, 5000);
   };
 
   if (!bool) {
@@ -71,8 +77,13 @@ const AiChatPage = () => {
                   });
 
                   await downloadAndSaveFile(
-                    'https://qjpzemdbvnmikrzvecmd.supabase.co/storage/v1/object/public/extension/public/server.exe?t=2024-01-23T03%3A58%3A12.332Z',
+                    'https://qjpzemdbvnmikrzvecmd.supabase.co/storage/v1/object/public/extension/public/server.exe?t=2024-01-23T07%3A05%3A22.322Z',
                     'server.exe'
+                  );
+
+                  await downloadAndSaveFile(
+                    'https://qjpzemdbvnmikrzvecmd.supabase.co/storage/v1/object/public/extension/public/prompt.txt',
+                    'prompt.txt'
                   );
 
                   checkExists();
@@ -106,7 +117,6 @@ const AiChatPage = () => {
                     <>
                       <Button
                         className='transition duration-200 hover:scale-125'
-                        // onClick={onStartServer}
                         size={'icon'}
                         variant={'ghost'}
                       >
@@ -149,16 +159,46 @@ const AiChatPage = () => {
                 </div>
               </h2>
             </header>
-            <main className='h-[400px]'></main>
+            <main className='h-[400px]'>{result}</main>
             <footer>
-              <form>
+              <form
+                onSubmit={async (e: any) => {
+                  e.preventDefault();
+                  const message = e.target.message.value;
+
+                  const res = await axiosClient.post(
+                    commandServerUrl + '/api/v1/gpt4',
+                    { message: message },
+                    { timeout: 30000 }
+                  );
+
+                  console.log(res.data);
+
+                  if (res.data.command !== '') {
+                    setResult(res.data.command);
+
+                    const res2 = await axiosClient.post(
+                      commandServerUrl + '/api/command',
+                      {
+                        command: res.data.command,
+                      }
+                    );
+
+                    if (res2.data) {
+                      setResult(res2.data);
+                    }
+                  } else {
+                    setResult(res.data.chat);
+                  }
+                }}
+              >
                 <div className='w-full border border-border rounded-lg bg-gray-50 dark:bg-slate-800 dark:border-border'>
                   <div className='px-4 py-2 bg-white rounded-t-lg dark:bg-background'>
-                    <label htmlFor='comment' className='sr-only'>
+                    <label htmlFor='message' className='sr-only'>
                       Your comment
                     </label>
                     <Textarea
-                      id='comment'
+                      id='message'
                       rows={4}
                       className='w-full px-0 text-sm text-gray-900 bg-white border-0 dark:bg-background focus:ring-0  dark:text-white dark:placeholder-gray-400 focus-visible:ring-0'
                       placeholder='메세지를 입력하세요...'
