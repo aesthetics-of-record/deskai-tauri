@@ -30,15 +30,20 @@ fn main() {
 
             move |app| {
                 let server_clone = Arc::clone(&server); // `start-server` 클로저용 클론
+
+                let app_data_dir = app.path_resolver().app_data_dir().unwrap(); // AppData 경로를 얻습니다.
+                let server_exe_path = app_data_dir.join("extensions").join("server.exe"); // 실행할 파일의 경로를 설정합니다.
+
                 let start = app.listen_global("start-server", move |event| {
                     println!("스타트 서버 {:?}", event.payload());
+
+                    let server_exe_path_clone = server_exe_path.clone(); // `server_exe_path`의 클론을 생성합니다.
+
                     let mut server_clone = server_clone.lock().unwrap(); // Mutex 잠금을 획득합니다.
                     *server_clone = Some(
-                        Command::new(
-                            "C:/Users/cho/Documents/GitHub/deskai-tauri/src-tauri/server.exe",
-                        )
-                        .spawn()
-                        .expect("failed to start FastAPI server"),
+                        Command::new(server_exe_path_clone)
+                            .spawn()
+                            .expect("failed to start FastAPI server"),
                     );
                 });
 

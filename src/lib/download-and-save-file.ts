@@ -21,11 +21,11 @@ const downloadAndSaveFile = async (url: string, filename: string) => {
     // 파일 시스템에 저장
     await writeBinaryFile(
       {
-        path: filename,
+        path: 'extensions/' + filename,
         contents: new Uint8Array(response.data),
       },
       {
-        dir: BaseDirectory.Download, // 다운로드 폴더에 파일을 저장합니다.
+        dir: BaseDirectory.AppData, // 폴더에 파일을 저장합니다.
       }
     );
 

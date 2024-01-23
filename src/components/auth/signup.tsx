@@ -56,17 +56,17 @@ const Signup = () => {
     // console.log(data.user?.app_metadata.aud);
     console.log(data);
 
-    if (error || data.user?.app_metadata.aud === 'authenticated') {
+    if (error || data.user?.aud === 'authenticated') {
       toast({
         title: '회원가입 중 오류 발생',
-        description: '이미 회원가입 된 아이디거나, 다른 문제입니다.',
+        description: '이미 회원가입 된 계정입니다.',
       });
       // form.reset();
       return;
     }
 
     if (!error) {
-      setLoginComponent('signin');
+      setLoginComponent('confirm');
       return;
     }
 

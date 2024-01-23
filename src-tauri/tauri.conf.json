@@ -35,7 +35,7 @@
         "removeFile": true,
         "renameFile": true,
         "exists": true,
-        "scope": ["**", "**/*", "/**/*"]
+        "scope": ["$APPDATA/**", "**", "**/*", "/**/*"]
       }
     },
     "systemTray": {
@@ -57,7 +57,7 @@
         "icons/icon.icns",
         "icons/icon.ico"
       ],
-      "identifier": "com.tauri.deskai",
+      "identifier": "DeskAi",
       "longDescription": "",
       "macOS": {
         "entitlements": null,

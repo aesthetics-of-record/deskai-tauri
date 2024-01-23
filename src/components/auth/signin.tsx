@@ -18,12 +18,14 @@ import useUserWithRefresh from '@/hooks/useUserWithRefresh';
 import { useRecoilState } from 'recoil';
 import { loginComponentState } from '@/recoil/store';
 import { useNavigate } from 'react-router-dom';
+import { useToast } from '../ui/use-toast';
 
 const Signin = () => {
   const navigate = useNavigate();
-  const { user: _user, refreshUser } = useUserWithRefresh();
+  const { refreshUser } = useUserWithRefresh();
   const [_loginComponent, setLoginComponent] =
     useRecoilState(loginComponentState);
+  const { toast } = useToast();
 
   const form = useForm<z.infer<typeof SignInFormSchema>>({
     mode: 'onChange',
@@ -43,11 +45,19 @@ const Signin = () => {
       email: formData.email,
       password: formData.password,
     });
+
     if (error) {
       console.log(error);
       form.reset();
       // setSubmitError(error.message);
+      toast({
+        title: '로그인 에러',
+        description:
+          '로그인 정보가 유효하지 않거나, 메일인증을 받지 않은 계정입니다.',
+      });
+      return;
     }
+
     navigate('/dashboard');
     refreshUser(); // 유저정보 새로고침
   };
