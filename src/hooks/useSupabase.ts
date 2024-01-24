@@ -1,12 +1,10 @@
 import { useState, useEffect } from 'react';
 
 //supaCall calls the Supabase API
-const useSupabase = (
-  supaCall: () => Promise<{ data: any; error: any }>
-) => {
+const useSupabase = (supaCall: () => Promise<{ data: any; error: any }>) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [data, setData] = useState(null);
+  const [data, setData] = useState<any[]>([]);
 
   useEffect(() => {
     async function getData() {

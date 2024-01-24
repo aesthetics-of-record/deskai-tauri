@@ -1,7 +1,8 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use std::process::{Child, Command};
+use std::os::windows::process::CommandExt;
+use std::process::{Child, Command}; // Windows 전용 확장 기능을 위한 트레잇
 use std::sync::{Arc, Mutex};
 
 use tauri::Manager;
@@ -12,6 +13,7 @@ struct Payload {
     args: Vec<String>,
     cwd: String,
 }
+const CREATE_NO_WINDOW: u32 = 0x08000000;
 
 fn main() {
     ///////////////////////////////////////////////////////////
@@ -42,6 +44,7 @@ fn main() {
                     let mut server_clone = server_clone.lock().unwrap(); // Mutex 잠금을 획득합니다.
                     *server_clone = Some(
                         Command::new(server_exe_path_clone)
+                            .creation_flags(CREATE_NO_WINDOW) // 창 없이 프로세스 생성
                             .spawn()
                             .expect("failed to start FastAPI server"),
                     );

@@ -1,31 +1,21 @@
 import { Button } from '@/components/ui/button';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import { commandServerUrl } from '@/config/urls';
+import useCommandJson from '@/hooks/useCommandJson';
 import useCommandServer from '@/hooks/useCommandServer';
-import useExists from '@/hooks/useExists';
-import { RobotDead, RobotExcited } from '@/icons/ai-chat';
+import { RobotConfused, RobotDead, RobotExcited } from '@/icons/ai-chat';
 import { axiosClient } from '@/lib/axios-tauri-client';
-import downloadAndSaveFile from '@/lib/download-and-save-file';
 import { emit } from '@tauri-apps/api/event';
-import { BaseDirectory, createDir, removeDir } from '@tauri-apps/api/fs';
 import { useState } from 'react';
 import { ClipLoader } from 'react-spinners';
 
 const AiChatPage = () => {
-  const { bool: prevBool } = useExists('');
-  const { bool, checkExists } = useExists('extensions/server.exe');
-  const [initDownloadLoading, setInitDownloadLoading] =
-    useState<boolean>(false);
   const [commandServerLoading, setCommandServerLoading] =
     useState<boolean>(false);
   const { commandServerStatus, checkCommandServerStatus } = useCommandServer();
+  const [gptLoading, setGptLoading] = useState<boolean>(false);
+  const { getIOFromCommand } = useCommandJson();
 
   const [result, setResult] = useState<string | null>(null);
   const onStartServer = async () => {
@@ -37,72 +27,6 @@ const AiChatPage = () => {
       setCommandServerLoading(false);
     }, 5000);
   };
-
-  if (!bool) {
-    return (
-      <div>
-        <Card className='m-4'>
-          <CardHeader>
-            <CardTitle>초기 설정 파일이 필요합니다.</CardTitle>
-            <CardDescription>
-              초기 설정 파일을 다운로드 해 주세요.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div>
-              <Button
-                disabled={initDownloadLoading}
-                className='active:scale-95 transition duration-200'
-                onClick={async () => {
-                  setInitDownloadLoading(true);
-
-                  if (prevBool) {
-                    // 그 전 파일 존재 시 전부 삭제
-                    await removeDir('', {
-                      dir: BaseDirectory.AppData,
-                      recursive: true,
-                    });
-                  }
-
-                  // 폴더 생성
-                  await createDir('', {
-                    dir: BaseDirectory.AppData,
-                    recursive: true,
-                  });
-
-                  // 다시 폴더 생성
-                  await createDir('extensions', {
-                    dir: BaseDirectory.AppData,
-                    recursive: true,
-                  });
-
-                  await downloadAndSaveFile(
-                    'https://qjpzemdbvnmikrzvecmd.supabase.co/storage/v1/object/public/extension/public/server.exe?t=2024-01-23T07%3A05%3A22.322Z',
-                    'server.exe'
-                  );
-
-                  await downloadAndSaveFile(
-                    'https://qjpzemdbvnmikrzvecmd.supabase.co/storage/v1/object/public/extension/public/prompt.txt',
-                    'prompt.txt'
-                  );
-
-                  checkExists();
-
-                  setInitDownloadLoading(false);
-                }}
-              >
-                {initDownloadLoading ? (
-                  <ClipLoader color='hsla(168, 67%, 53%, 1)' size={16} />
-                ) : (
-                  '다운로드 시작'
-                )}
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
 
   return (
     <div>
@@ -120,10 +44,11 @@ const AiChatPage = () => {
                         size={'icon'}
                         variant={'ghost'}
                       >
-                        {commandServerLoading ? (
-                          <ClipLoader
-                            color='hsla(168, 67%, 53%, 1)'
-                            size={16}
+                        {gptLoading ? (
+                          <RobotConfused
+                            className='animate-spin'
+                            width={24}
+                            height={24}
                           />
                         ) : (
                           <RobotExcited width={24} height={24} />
@@ -159,11 +84,17 @@ const AiChatPage = () => {
                 </div>
               </h2>
             </header>
-            <main className='h-[400px]'>{result}</main>
+            <main className='h-[400px]'>
+              {result !== null ? (
+                <Card className='mt-4 p-4 bg-primary'>{result}</Card>
+              ) : null}
+            </main>
             <footer>
               <form
                 onSubmit={async (e: any) => {
                   e.preventDefault();
+                  setGptLoading(true);
+
                   const message = e.target.message.value;
 
                   const res = await axiosClient.post(
@@ -172,24 +103,56 @@ const AiChatPage = () => {
                     { timeout: 30000 }
                   );
 
-                  console.log(res.data);
+                  // console.log(res.data);
 
+                  // command 가 빈칸이면 chat모드
                   if (res.data.command !== '') {
                     setResult(res.data.command);
 
-                    const res2 = await axiosClient.post(
-                      commandServerUrl + '/api/command',
-                      {
-                        command: res.data.command,
-                      }
-                    );
+                    // 아웃풋변수
+                    let output: string | null = null;
 
-                    if (res2.data) {
-                      setResult(res2.data);
+                    if (!getIOFromCommand(res.data.command)) {
+                      // 커스텀 커맨드가 아니라면..
+                      await axiosClient.post(
+                        commandServerUrl + '/api/command',
+                        {
+                          command: `${res.data.command}`,
+                        }
+                      );
+                      console.log('커스텀 커맨드 X');
+
+                      setGptLoading(false);
+                      return;
+                    }
+
+                    // command의 인풋 / 아웃풋 확인
+                    if (getIOFromCommand(res.data.command)?.input) {
+                      output = await axiosClient.post(
+                        commandServerUrl + '/api/command',
+                        {
+                          command: `${res.data.command} ${message}`,
+                        }
+                      );
+                    } else {
+                      // console.log('인풋없음');
+                      output = await axiosClient.post(
+                        commandServerUrl + '/api/command',
+                        {
+                          command: `${res.data.command}`,
+                        }
+                      );
+                    }
+
+                    // 아웃풋이 true라면
+                    if (getIOFromCommand(res.data.command)?.output) {
+                      setResult(output);
                     }
                   } else {
                     setResult(res.data.chat);
                   }
+
+                  setGptLoading(false);
                 }}
               >
                 <div className='w-full border border-border rounded-lg bg-gray-50 dark:bg-slate-800 dark:border-border'>
@@ -210,7 +173,11 @@ const AiChatPage = () => {
                       type='submit'
                       className='inline-flex items-center py-2.5 px-4 text-xs font-medium text-center text-white bg-primary rounded-lg hover:bg-primary/70 active:scale-90 transition duration-200'
                     >
-                      보내기
+                      {gptLoading ? (
+                        <ClipLoader color='hsla(168, 67%, 53%, 1)' size={16} />
+                      ) : (
+                        '전송'
+                      )}
                     </button>
                     <div className='flex ps-0 space-x-1 rtl:space-x-reverse sm:ps-2'>
                       <button

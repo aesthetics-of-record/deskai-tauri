@@ -4,6 +4,7 @@ import { ThemeProvider } from './providers/theme-provider';
 import { RecoilRoot } from 'recoil';
 import AiChatPage from './pages/ai-chat-page';
 import PromptSettingPage from './pages/prompt-setting-page';
+import ExtensionsPage from './pages/extensions-page';
 
 const router = createBrowserRouter([
   {
@@ -29,7 +30,7 @@ const router = createBrowserRouter([
       },
       {
         path: 'extensions',
-        element: <div>extensions</div>,
+        element: <ExtensionsPage />,
       },
     ],
   },

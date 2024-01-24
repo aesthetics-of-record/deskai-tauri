@@ -7,10 +7,10 @@ const useSuapbaseWithCallback = (
   const [error, setError] = useState(null);
   const [data, setData] = useState(null);
 
-  async function callService(args?: any[]) {
+  async function callService(args?: any) {
     setLoading(true);
     try {
-      let { data, error } = await supaCall(args);
+      let { data, error } = await supaCall(...args);
       if (error) {
         setError(error);
       } else {
