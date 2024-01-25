@@ -10,12 +10,11 @@ import {
 import { Progress } from '@/components/ui/progress';
 import useExists from '@/hooks/useExists';
 import downloadAndSaveFile from '@/lib/download-and-save-file';
-import { BaseDirectory, createDir, removeDir } from '@tauri-apps/api/fs';
+import { BaseDirectory, createDir } from '@tauri-apps/api/fs';
 import { useState } from 'react';
 import { ClipLoader } from 'react-spinners';
 
 const InitSettingProvider = ({ children }: { children: React.ReactNode }) => {
-  const { bool: prevBool } = useExists('');
   const { bool: bool1, checkExists: check1 } = useExists(
     'extensions/server.exe'
   );

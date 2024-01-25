@@ -30,7 +30,6 @@ import {
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from '@/components/ui/use-toast';
 import useSupabase from '@/hooks/useSupabase';
-import useSuapbaseWithCallback from '@/hooks/useSupabaseWithCallback';
 import {
   getAllExtensions,
   insertExtensions,
