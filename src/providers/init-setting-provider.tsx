@@ -57,39 +57,50 @@ const InitSettingProvider = ({ children }: { children: React.ReactNode }) => {
                 onClick={async () => {
                   setInitDownloadLoading(true);
 
-                  if (prevBool) {
-                    // 그 전 파일 존재 시 전부 삭제
-                    await removeDir('', {
-                      dir: BaseDirectory.AppData,
-                      recursive: true,
-                    });
-                  }
+                  // if (prevBool) {
+                  //   // 그 전 파일 존재 시 전부 삭제
+                  //   await removeDir('', {
+                  //     dir: BaseDirectory.AppData,
+                  //     recursive: true,
+                  //   });
+                  // }
 
                   setProgress(10);
 
-                  // 폴더 생성
-                  await createDir('', {
-                    dir: BaseDirectory.AppData,
-                    recursive: true,
-                  });
+                  try {
+                    // 폴더 생성
+                    await createDir('', {
+                      dir: BaseDirectory.AppData,
+                      recursive: true,
+                    });
+                  } catch {
+                    console.log('이미 기본폴더가 존재합니다.');
+                  }
 
-                  // 다시 폴더 생성
-                  await createDir('extensions', {
-                    dir: BaseDirectory.AppData,
-                    recursive: true,
-                  });
+                  try {
+                    // 다시 폴더 생성
+                    await createDir('extensions', {
+                      dir: BaseDirectory.AppData,
+                      recursive: true,
+                    });
+                  } catch {
+                    console.log('이미 extensions폴더가 존재합니다.');
+                  }
 
                   setProgress(15);
 
-                  await downloadAndSaveFile(serverDownloadUrl, 'server.exe');
+                  if (!bool1)
+                    await downloadAndSaveFile(serverDownloadUrl, 'server.exe');
 
                   setProgress(65);
 
-                  await downloadAndSaveFile(jsonDownloadUrl, 'prompt.json');
+                  if (!bool2)
+                    await downloadAndSaveFile(jsonDownloadUrl, 'prompt.json');
 
                   setProgress(80);
 
-                  await downloadAndSaveFile(txtDownloadUrl, 'prompt.txt');
+                  if (!bool3)
+                    await downloadAndSaveFile(txtDownloadUrl, 'prompt.txt');
 
                   setProgress(100);
 

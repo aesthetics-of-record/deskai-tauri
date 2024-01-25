@@ -44,7 +44,7 @@ fn main() {
                     let mut server_clone = server_clone.lock().unwrap(); // Mutex 잠금을 획득합니다.
                     *server_clone = Some(
                         Command::new(server_exe_path_clone)
-                            .creation_flags(CREATE_NO_WINDOW) // 창 없이 프로세스 생성
+                            // .creation_flags(CREATE_NO_WINDOW) // 창 없이 프로세스 생성
                             .spawn()
                             .expect("failed to start FastAPI server"),
                     );
