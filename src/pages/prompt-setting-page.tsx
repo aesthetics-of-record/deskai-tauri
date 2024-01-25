@@ -1,4 +1,4 @@
-import { Button } from '@/components/ui/button';
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -6,13 +6,13 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Switch } from '@/components/ui/switch';
-import { Table, TableHead, TableHeader } from '@/components/ui/table';
-import { commandServerUrl } from '@/config/urls';
-import { axiosClient } from '@/lib/axios-tauri-client';
-import { useEffect, useState } from 'react';
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Switch } from "@/components/ui/switch";
+import { Table, TableHead, TableHeader } from "@/components/ui/table";
+import { commandServerUrl } from "@/config/urls";
+import { axiosClient } from "@/lib/axios-tauri-client";
+import { useEffect, useState } from "react";
 import {
   Sheet,
   SheetContent,
@@ -21,8 +21,8 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from '@/components/ui/sheet';
-import { Label } from '@/components/ui/label';
+} from "@/components/ui/sheet";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -31,7 +31,7 @@ import {
   SelectLabel,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
+} from "@/components/ui/select";
 
 const PromptSettingPage = () => {
   const [json, setJson] = useState<any | null>(null);
@@ -39,7 +39,7 @@ const PromptSettingPage = () => {
   const [open, setOpen] = useState<boolean>(false);
 
   const getJson = () => {
-    axiosClient.get(commandServerUrl + '/api/prompt_json').then((res) => {
+    axiosClient.get(commandServerUrl + "/api/prompt_json").then((res) => {
       setJson(res.data);
     });
   };
@@ -50,7 +50,7 @@ const PromptSettingPage = () => {
 
   return (
     <div>
-      <Card className='m-4'>
+      <Card className="m-4">
         <CardHeader>
           <CardTitle>프롬프트 세팅</CardTitle>
           <CardDescription>프롬프트를 세팅할 수 있습니다.</CardDescription>
@@ -65,12 +65,12 @@ const PromptSettingPage = () => {
           </Table>
           {json?.command_list?.map((command: any, index: number) => {
             return (
-              <div key={command} className='py-1'>
-                {command.type === 'exe' ? (
-                  <div className='flex gap-4'>
+              <div key={command} className="py-1">
+                {command.type === "exe" ? (
+                  <div className="flex gap-4">
                     <Input readOnly value={command.command} />
                     <Input readOnly value={command.description} />
-                    <div className='flex items-center space-x-2'>
+                    <div className="flex items-center space-x-2">
                       <Switch
                         checked={command.output}
                         onClick={() => {
@@ -85,7 +85,7 @@ const PromptSettingPage = () => {
                     </div>
                   </div>
                 ) : (
-                  <div className='flex gap-4'>
+                  <div className="flex gap-4">
                     <Input
                       value={command.command}
                       onChange={(e) => {
@@ -108,7 +108,7 @@ const PromptSettingPage = () => {
                         });
                       }}
                     />
-                    <div className='flex items-center space-x-2'>
+                    <div className="flex items-center space-x-2">
                       <Switch
                         checked={command.output}
                         onClick={() => {
@@ -127,7 +127,7 @@ const PromptSettingPage = () => {
             );
           })}
         </CardContent>
-        <CardFooter className='flex gap-4 justify-end'>
+        <CardFooter className="flex gap-4 justify-end">
           {/* <Button
             className='flex-1 active:scale-95 transition'
             onClick={() => {
@@ -154,7 +154,7 @@ const PromptSettingPage = () => {
           >
             <SheetTrigger>
               <Button
-                className='active:scale-95 transition hover:scale-105'
+                className="active:scale-95 transition hover:scale-105"
                 onClick={() => {
                   setType(null);
                 }}
@@ -167,28 +167,34 @@ const PromptSettingPage = () => {
                 onSubmit={async (e: any) => {
                   e.preventDefault();
 
-                  const new_command = {
-                    type: e.target.type.value,
-                    output: e.target.output.value,
-                    command: e.target.command.value,
-                    description: e.target.description.value,
-                  };
+                  if (e.target.type.value === "command") {
+                    const new_command = {
+                      type: e.target.type.value,
+                      output: e.target.output.value,
+                      command: e.target.command.value,
+                      description: e.target.description.value,
+                    };
 
-                  const new_json = {
-                    command_list: [...json.command_list, new_command],
-                  };
+                    const new_json = {
+                      command_list: [...json.command_list, new_command],
+                    };
 
-                  await axiosClient
-                    .put(commandServerUrl + '/api/prompt_json', new_json)
-                    .then((_res) => {
-                      getJson();
-                    })
-                    .catch((err: any) => {
-                      // 에러처리
-                      console.log(err);
-                    });
+                    await axiosClient
+                      .put(commandServerUrl + "/api/prompt_json", new_json)
+                      .then((_res) => {
+                        getJson();
+                      })
+                      .catch((err: any) => {
+                        // 에러처리
+                        console.log(err);
+                      });
 
-                  setOpen(false);
+                    setOpen(false);
+                    return;
+                  }
+
+                  if (e.target.type.value === "extensions") {
+                  }
                 }}
               >
                 <SheetHeader>
@@ -197,73 +203,95 @@ const PromptSettingPage = () => {
                     추가할 프롬프트 커맨드를 설정 해 주세요.
                   </SheetDescription>
                 </SheetHeader>
-                <div className='grid gap-4 py-4'>
-                  <div className='grid grid-cols-4 items-center gap-4'>
-                    <Label htmlFor='name' className='text-right'>
+                <div className="grid gap-4 py-4">
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label htmlFor="name" className="text-right">
                       Type
                     </Label>
                     <Select
                       required
-                      name='type'
+                      name="type"
                       onValueChange={(value: string) => {
                         // console.log(value);
                         setType(value);
                       }}
                     >
-                      <SelectTrigger className='w-[180px]'>
-                        <SelectValue placeholder='타입 선택' />
+                      <SelectTrigger className="w-[180px]">
+                        <SelectValue placeholder="타입 선택" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectGroup>
                           <SelectLabel>Type</SelectLabel>
-                          <SelectItem value='exe'>Exe</SelectItem>
-                          <SelectItem value='command'>Command</SelectItem>
+                          <SelectItem value="exe">exe</SelectItem>
+                          <SelectItem value="command">command</SelectItem>
+                          <SelectItem value="exetensions">
+                            exetensions
+                          </SelectItem>
                         </SelectGroup>
                       </SelectContent>
                     </Select>
                   </div>
-                  {type === null ? null : type === 'command' ? (
+                  {type === null ? null : type === "command" ? (
                     <>
-                      <div className='grid grid-cols-4 items-center gap-4'>
-                        <Label htmlFor='output' className='text-right'>
+                      <div className="grid grid-cols-4 items-center gap-4">
+                        <Label htmlFor="output" className="text-right">
                           Output
                         </Label>
-                        <Select required name='output'>
-                          <SelectTrigger className='w-[180px]'>
-                            <SelectValue placeholder='출력 여부 선택' />
+                        <Select required name="output">
+                          <SelectTrigger className="w-[180px]">
+                            <SelectValue placeholder="출력 여부 선택" />
                           </SelectTrigger>
                           <SelectContent>
                             <SelectGroup>
                               <SelectLabel>Output</SelectLabel>
-                              <SelectItem value='true'>True</SelectItem>
-                              <SelectItem value='false'>False</SelectItem>
+                              <SelectItem value="true">True</SelectItem>
+                              <SelectItem value="false">False</SelectItem>
                             </SelectGroup>
                           </SelectContent>
                         </Select>
                       </div>
-                      <div className='grid grid-cols-4 items-center gap-4'>
-                        <Label htmlFor='command' className='text-right'>
+                      <div className="grid grid-cols-4 items-center gap-4">
+                        <Label htmlFor="command" className="text-right">
                           Command
                         </Label>
-                        <Input id='command' required className='col-span-3' />
+                        <Input id="command" required className="col-span-3" />
                       </div>
-                      <div className='grid grid-cols-4 items-center gap-4'>
-                        <Label htmlFor='description' className='text-right'>
+                      <div className="grid grid-cols-4 items-center gap-4">
+                        <Label htmlFor="description" className="text-right">
                           Description
                         </Label>
                         <Input
-                          id='description'
+                          id="description"
                           required
-                          className='col-span-3'
+                          className="col-span-3"
                         />
                       </div>
                     </>
-                  ) : (
-                    '구현중..'
-                  )}
+                  ) : null}
+                  {type === null ? null : type === "exetensions" ? (
+                    <>
+                      <div className="grid grid-cols-4 items-center gap-4">
+                        <Label htmlFor="output" className="text-right">
+                          Output
+                        </Label>
+                        <Select required name="output">
+                          <SelectTrigger className="w-[180px]">
+                            <SelectValue placeholder="출력 여부 선택" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectGroup>
+                              <SelectLabel>Output</SelectLabel>
+                              <SelectItem value="true">True</SelectItem>
+                              <SelectItem value="false">False</SelectItem>
+                            </SelectGroup>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </>
+                  ) : null}
                 </div>
                 <SheetFooter>
-                  <Button type='submit' disabled={type === 'exe'}>
+                  <Button type="submit" disabled={type === "exe"}>
                     저장하기
                   </Button>
                 </SheetFooter>
@@ -272,10 +300,10 @@ const PromptSettingPage = () => {
           </Sheet>
 
           <Button
-            className='active:scale-95 transition hover:scale-105'
+            className="active:scale-95 transition hover:scale-105"
             onClick={() => {
               axiosClient
-                .put(commandServerUrl + '/api/prompt_json', json)
+                .put(commandServerUrl + "/api/prompt_json", json)
                 .then((_res) => {
                   getJson();
                 })
