@@ -27,9 +27,11 @@ fn main() {
     let server = Arc::new(Mutex::new(None));
     ///////////////////////////////////////////////////////////
 
+    let open = CustomMenuItem::new("open".to_string(), "열기");
     let quit = CustomMenuItem::new("quit".to_string(), "끝내기");
     let tray_menu = SystemTrayMenu::new()
         .add_native_item(SystemTrayMenuItem::Separator)
+        .add_item(open)
         .add_item(quit);
 
     tauri::Builder::default()
