@@ -39,6 +39,9 @@
       },
       "notification": {
         "all": true
+      },
+      "os": {
+        "all": true
       }
     },
     "systemTray": {

@@ -13,15 +13,19 @@ import useExists from '@/hooks/useExists';
 import downloadAndSaveFile from '@/lib/download-and-save-file';
 import { emit } from '@tauri-apps/api/event';
 import { BaseDirectory, createDir } from '@tauri-apps/api/fs';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ClipLoader } from 'react-spinners';
+import { useClipboard } from '@mantine/hooks';
+import { invoke } from '@tauri-apps/api/tauri';
 
 const InitSettingProvider = ({
   children,
 }: {
   children: React.ReactNode;
 }) => {
-  const serverName = 'server'; // 우분투, 윈도우
+  const os_name: string = 'ubuntu'; // ubuntu, window
+
+  const serverName = os_name === 'ubuntu' ? 'server' : 'server.exe';
 
   const { bool: bool1, checkExists: check1 } = useExists(
     'extensions/' + serverName // 우분투에서는 server으로 변경
@@ -47,6 +51,17 @@ const InitSettingProvider = ({
     'https://qjpzemdbvnmikrzvecmd.supabase.co/storage/v1/object/public/init_files/prompt.json';
   const txtDownloadUrl =
     'https://qjpzemdbvnmikrzvecmd.supabase.co/storage/v1/object/public/init_files/prompt.txt';
+
+  // 유저네임 가져오기 및 우분투 설정
+  const clipboard = useClipboard({ timeout: 500 });
+
+  const [userName, setUserName] = useState('');
+
+  useEffect(() => {
+    invoke('get_username')
+      .then((name: any) => setUserName(name))
+      .catch((error) => console.error('Error fetching username:', error));
+  }, []);
 
   if (!bool1 || !bool2 || !bool3) {
     return (
@@ -175,6 +190,29 @@ const InitSettingProvider = ({
             <CardContent className="p-4">
               <p>🏃‍♂️커맨드서버 여는중입니다.🚴‍♂️</p>
               <p className="mt-4">😴잠시만 기다려 주세요.🧐</p>
+
+              {os_name === 'ubuntu' ? (
+                <>
+                  <p className="mt-4">
+                    10초 이상 화면이 지속 될 경우.. 아래의 명령어를 터미널에
+                    입력 해 권한을 부여하고 재시작 해 주세요.
+                  </p>
+                  <code className="relative rounded bg-muted px-[0.3rem] py-[0.2rem] font-mono text-sm font-semibold">
+                    chmod +x /home/{userName}
+                    /.local/share/DeskAi/extensions/*
+                  </code>
+                  <Button
+                    className="ml-4"
+                    onClick={() =>
+                      clipboard.copy(
+                        `chmod +x /home/${userName}/.local/share/DeskAi/extensions/*`
+                      )
+                    }
+                  >
+                    {clipboard.copied ? 'Copied' : 'Copy'}
+                  </Button>
+                </>
+              ) : null}
             </CardContent>
           </Card>
         </div>

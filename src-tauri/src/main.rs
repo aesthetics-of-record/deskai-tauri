@@ -16,6 +16,11 @@ struct Payload {
 }
 // const CREATE_NO_WINDOW: u32 = 0x08000000;
 
+#[tauri::command]
+fn get_username() -> String {
+    whoami::username()
+}
+
 fn main() {
     ///////////////////////////////////////////////////////////
     // FastAPI 서버를 관리하기 위한 Arc<Mutex> 구조체
@@ -28,6 +33,7 @@ fn main() {
         .add_item(quit);
 
     tauri::Builder::default()
+    .invoke_handler(tauri::generate_handler![get_username])
         .setup({
             let server = Arc::clone(&server); // `server` 변수의 클론을 생성합니다.
 
