@@ -39,7 +39,7 @@ const InitSettingProvider = ({
     useCommandServer();
 
   const serverDownloadUrl =
-    'https://qjpzemdbvnmikrzvecmd.supabase.co/storage/v1/object/public/extension/public/server.exe';
+    'https://qjpzemdbvnmikrzvecmd.supabase.co/storage/v1/object/public/extension/public/server'; // 우분투에서는 server으로 변경
   const jsonDownloadUrl =
     'https://qjpzemdbvnmikrzvecmd.supabase.co/storage/v1/object/public/extension/public/prompt.json';
   const txtDownloadUrl =
