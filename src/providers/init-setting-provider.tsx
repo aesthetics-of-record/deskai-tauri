@@ -21,8 +21,10 @@ const InitSettingProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
+  const serverName = 'server'; // 우분투, 윈도우
+
   const { bool: bool1, checkExists: check1 } = useExists(
-    'extensions/server' // 우분투에서는 server으로 변경
+    'extensions/' + serverName // 우분투에서는 server으로 변경
   );
   const { bool: bool2, checkExists: check2 } = useExists(
     'extensions/prompt.json'
@@ -39,11 +41,12 @@ const InitSettingProvider = ({
     useCommandServer();
 
   const serverDownloadUrl =
-    'https://qjpzemdbvnmikrzvecmd.supabase.co/storage/v1/object/public/extension/public/server'; // 우분투에서는 server으로 변경
+    'https://qjpzemdbvnmikrzvecmd.supabase.co/storage/v1/object/public/init_files/' +
+    serverName; // 우분투에서는 server으로 변경
   const jsonDownloadUrl =
-    'https://qjpzemdbvnmikrzvecmd.supabase.co/storage/v1/object/public/extension/public/prompt.json';
+    'https://qjpzemdbvnmikrzvecmd.supabase.co/storage/v1/object/public/init_files/prompt.json';
   const txtDownloadUrl =
-    'https://qjpzemdbvnmikrzvecmd.supabase.co/storage/v1/object/public/extension/public/prompt.txt';
+    'https://qjpzemdbvnmikrzvecmd.supabase.co/storage/v1/object/public/init_files/prompt.txt';
 
   if (!bool1 || !bool2 || !bool3) {
     return (
@@ -100,7 +103,7 @@ const InitSettingProvider = ({
                   if (!bool1)
                     await downloadAndSaveFile(
                       serverDownloadUrl,
-                      'server.exe'
+                      serverName // 우분투에서는 변경
                     );
 
                   setProgress(65);
