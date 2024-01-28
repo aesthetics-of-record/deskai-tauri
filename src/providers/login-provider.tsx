@@ -4,6 +4,7 @@ import WindowTitlebar from '@/components/titlebar/window-titlebar';
 import useUserWithRefresh from '@/hooks/useUserWithRefresh';
 import { useRecoilState } from 'recoil';
 import { loginComponentState } from '@/recoil/store';
+import Confirm from '@/components/auth/confirm';
 
 const LoginProvider = ({ children }: { children: React.ReactNode }) => {
   const { user } = useUserWithRefresh();
@@ -31,6 +32,7 @@ const LoginProvider = ({ children }: { children: React.ReactNode }) => {
       return (
         <>
           <WindowTitlebar />
+          <Confirm />
         </>
       );
     }

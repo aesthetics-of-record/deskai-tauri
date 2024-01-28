@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
@@ -6,13 +6,13 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Switch } from "@/components/ui/switch";
-import { Table, TableHead, TableHeader } from "@/components/ui/table";
-import { commandServerUrl } from "@/config/urls";
-import { axiosClient } from "@/lib/axios-tauri-client";
-import { useEffect, useState } from "react";
+} from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Switch } from '@/components/ui/switch';
+import { Table, TableHead, TableHeader } from '@/components/ui/table';
+import { commandServerUrl } from '@/config/urls';
+import { axiosClient } from '@/lib/axios-tauri-client';
+import { useEffect, useState } from 'react';
 import {
   Sheet,
   SheetContent,
@@ -21,8 +21,8 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from "@/components/ui/sheet";
-import { Label } from "@/components/ui/label";
+} from '@/components/ui/sheet';
+import { Label } from '@/components/ui/label';
 import {
   Select,
   SelectContent,
@@ -31,7 +31,8 @@ import {
   SelectLabel,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from '@/components/ui/select';
+import { Close } from '@/icons/titlebar';
 
 const PromptSettingPage = () => {
   const [json, setJson] = useState<any | null>(null);
@@ -39,7 +40,7 @@ const PromptSettingPage = () => {
   const [open, setOpen] = useState<boolean>(false);
 
   const getJson = () => {
-    axiosClient.get(commandServerUrl + "/api/prompt_json").then((res) => {
+    axiosClient.get(commandServerUrl + '/api/prompt_json').then((res) => {
       setJson(res.data);
     });
   };
@@ -65,11 +66,20 @@ const PromptSettingPage = () => {
           </Table>
           {json?.command_list?.map((command: any, index: number) => {
             return (
-              <div key={command} className="py-1">
-                {command.type === "exe" ? (
+              <div
+                key={command}
+                className="py-1"
+              >
+                {command.type === 'exe' ? (
                   <div className="flex gap-4">
-                    <Input readOnly value={command.command} />
-                    <Input readOnly value={command.description} />
+                    <Input
+                      readOnly
+                      value={command.command}
+                    />
+                    <Input
+                      readOnly
+                      value={command.description}
+                    />
                     <div className="flex items-center space-x-2">
                       <Switch
                         checked={command.output}
@@ -82,6 +92,22 @@ const PromptSettingPage = () => {
                           });
                         }}
                       />
+                    </div>
+                    <div>
+                      <Button
+                        size={'icon'}
+                        variant={'ghost'}
+                        onClick={() => {
+                          const new_list = [...json.command_list];
+
+                          new_list.splice(index, 1);
+                          setJson({
+                            command_list: [...new_list],
+                          });
+                        }}
+                      >
+                        <Close />
+                      </Button>
                     </div>
                   </div>
                 ) : (
@@ -120,6 +146,22 @@ const PromptSettingPage = () => {
                           });
                         }}
                       />
+                    </div>
+                    <div>
+                      <Button
+                        size={'icon'}
+                        variant={'ghost'}
+                        onClick={() => {
+                          const new_list = [...json.command_list];
+
+                          new_list.splice(index, 1);
+                          setJson({
+                            command_list: [...new_list],
+                          });
+                        }}
+                      >
+                        <Close />
+                      </Button>
                     </div>
                   </div>
                 )}
@@ -167,7 +209,7 @@ const PromptSettingPage = () => {
                 onSubmit={async (e: any) => {
                   e.preventDefault();
 
-                  if (e.target.type.value === "command") {
+                  if (e.target.type.value === 'command') {
                     const new_command = {
                       type: e.target.type.value,
                       output: e.target.output.value,
@@ -180,7 +222,7 @@ const PromptSettingPage = () => {
                     };
 
                     await axiosClient
-                      .put(commandServerUrl + "/api/prompt_json", new_json)
+                      .put(commandServerUrl + '/api/prompt_json', new_json)
                       .then((_res) => {
                         getJson();
                       })
@@ -193,7 +235,7 @@ const PromptSettingPage = () => {
                     return;
                   }
 
-                  if (e.target.type.value === "extensions") {
+                  if (e.target.type.value === 'extensions') {
                   }
                 }}
               >
@@ -205,7 +247,10 @@ const PromptSettingPage = () => {
                 </SheetHeader>
                 <div className="grid gap-4 py-4">
                   <div className="grid grid-cols-4 items-center gap-4">
-                    <Label htmlFor="name" className="text-right">
+                    <Label
+                      htmlFor="name"
+                      className="text-right"
+                    >
                       Type
                     </Label>
                     <Select
@@ -231,13 +276,19 @@ const PromptSettingPage = () => {
                       </SelectContent>
                     </Select>
                   </div>
-                  {type === null ? null : type === "command" ? (
+                  {type === null ? null : type === 'command' ? (
                     <>
                       <div className="grid grid-cols-4 items-center gap-4">
-                        <Label htmlFor="output" className="text-right">
+                        <Label
+                          htmlFor="output"
+                          className="text-right"
+                        >
                           Output
                         </Label>
-                        <Select required name="output">
+                        <Select
+                          required
+                          name="output"
+                        >
                           <SelectTrigger className="w-[180px]">
                             <SelectValue placeholder="출력 여부 선택" />
                           </SelectTrigger>
@@ -251,13 +302,23 @@ const PromptSettingPage = () => {
                         </Select>
                       </div>
                       <div className="grid grid-cols-4 items-center gap-4">
-                        <Label htmlFor="command" className="text-right">
+                        <Label
+                          htmlFor="command"
+                          className="text-right"
+                        >
                           Command
                         </Label>
-                        <Input id="command" required className="col-span-3" />
+                        <Input
+                          id="command"
+                          required
+                          className="col-span-3"
+                        />
                       </div>
                       <div className="grid grid-cols-4 items-center gap-4">
-                        <Label htmlFor="description" className="text-right">
+                        <Label
+                          htmlFor="description"
+                          className="text-right"
+                        >
                           Description
                         </Label>
                         <Input
@@ -268,13 +329,19 @@ const PromptSettingPage = () => {
                       </div>
                     </>
                   ) : null}
-                  {type === null ? null : type === "exetensions" ? (
+                  {type === null ? null : type === 'exetensions' ? (
                     <>
                       <div className="grid grid-cols-4 items-center gap-4">
-                        <Label htmlFor="output" className="text-right">
+                        <Label
+                          htmlFor="output"
+                          className="text-right"
+                        >
                           Output
                         </Label>
-                        <Select required name="output">
+                        <Select
+                          required
+                          name="output"
+                        >
                           <SelectTrigger className="w-[180px]">
                             <SelectValue placeholder="출력 여부 선택" />
                           </SelectTrigger>
@@ -291,7 +358,10 @@ const PromptSettingPage = () => {
                   ) : null}
                 </div>
                 <SheetFooter>
-                  <Button type="submit" disabled={type === "exe"}>
+                  <Button
+                    type="submit"
+                    disabled={type === 'exe'}
+                  >
                     저장하기
                   </Button>
                 </SheetFooter>
@@ -303,7 +373,7 @@ const PromptSettingPage = () => {
             className="active:scale-95 transition hover:scale-105"
             onClick={() => {
               axiosClient
-                .put(commandServerUrl + "/api/prompt_json", json)
+                .put(commandServerUrl + '/api/prompt_json', json)
                 .then((_res) => {
                   getJson();
                 })

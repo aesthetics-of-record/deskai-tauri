@@ -74,8 +74,16 @@ fn main() {
                 let _ = window.unminimize();
                 let _ = window.set_focus();
             }
+            
             SystemTrayEvent::MenuItemClick { id, .. } => {
                 match id.as_str() {
+                    "open" => {
+                        let window = app.get_window("main").unwrap();
+                        let _ = window.show();
+                        let _ = window.unminimize();
+                        let _ = window.set_focus();
+                    }         
+                    
                     "quit" => {
                         std::process::exit(0); // 종료
                     }
@@ -83,6 +91,8 @@ fn main() {
                 }
             }
             _ => {}
+
+
         })
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

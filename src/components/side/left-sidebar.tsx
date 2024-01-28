@@ -1,10 +1,18 @@
-import { useMemo } from "react";
-import { cn } from "@/lib/utils";
-import { Separator } from "../ui/separator";
-import SidebarItem from "./SidebarItem";
-import { useLocation } from "react-router-dom";
-import { Chat, ColorPalette, Dashboard, Extensions, Robot, Settings } from "@/icons/global";
-import { ModeToggle } from "../global/mode-toggle";
+import { useMemo } from 'react';
+import { cn } from '@/lib/utils';
+import { Separator } from '../ui/separator';
+import SidebarItem from './SidebarItem';
+import { useLocation } from 'react-router-dom';
+import {
+  Chat,
+  ColorPalette,
+  Dashboard,
+  Extensions,
+  Robot,
+  Settings,
+} from '@/icons/global';
+import { ModeToggle } from '../global/mode-toggle';
+import { RobotConfused } from '@/icons/ai-chat';
 
 interface LeftSidebarProps {
   className?: string;
@@ -13,38 +21,49 @@ interface LeftSidebarProps {
 const LeftSidebar: React.FC<LeftSidebarProps> = ({ className }) => {
   let location = useLocation();
 
+  // chat 하위페이지 들에서는 기존 사이드바 제거
+  if (location.pathname.startsWith('/chat')) {
+    return;
+  }
+
   const routes = useMemo(
     () => [
       {
         icon: Settings,
-        label: "Setting",
-        active: location.pathname === "/setting",
-        href: "/setting",
+        label: 'Setting',
+        active: location.pathname === '/setting',
+        href: '/setting',
       },
       {
         icon: Dashboard,
-        label: "Dashboard",
-        active: location.pathname === "/dashboard",
-        href: "/dashboard",
+        label: 'Dashboard',
+        active: location.pathname === '/dashboard',
+        href: '/dashboard',
       },
       {
-        icon: Chat,
-        label: "AI",
-        active: location.pathname === "/ai",
-        href: "/ai",
+        icon: RobotConfused,
+        label: 'AI',
+        active: location.pathname === '/ai',
+        href: '/ai',
       },
       {
         icon: Extensions,
-        label: "Extensions",
-        active: location.pathname === "/extensions",
-        href: "/extensions"
-      }
+        label: 'Extensions',
+        active: location.pathname === '/extensions',
+        href: '/extensions',
+      },
+      {
+        icon: Chat,
+        label: 'Chat',
+        active: location.pathname === '/chat',
+        href: '/chat',
+      },
     ],
     [location]
   );
 
   return (
-    <div className={cn("flex", className)}>
+    <div className={cn('flex', className)}>
       <div className="flex flex-col gap-y-2 h-screen w-[240px] border-r bg-slate-200 dark:bg-slate-900 ">
         <div className="flex flex-col gap-y-2 p-4 text-medium text-sm">
           <section className="px-4 flex items-center gap-x-4 group">
@@ -70,7 +89,12 @@ const LeftSidebar: React.FC<LeftSidebarProps> = ({ className }) => {
 
           <section>
             {routes.map((item: any) => {
-              return <SidebarItem key={item.label} {...item} />;
+              return (
+                <SidebarItem
+                  key={item.label}
+                  {...item}
+                />
+              );
             })}
           </section>
         </div>

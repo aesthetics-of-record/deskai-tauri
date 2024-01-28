@@ -36,6 +36,9 @@
         "renameFile": true,
         "exists": true,
         "scope": ["$APPDATA/**", "**", "**/*", "/**/*"]
+      },
+      "notification": {
+        "all": true
       }
     },
     "systemTray": {

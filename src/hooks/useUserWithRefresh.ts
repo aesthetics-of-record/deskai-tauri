@@ -10,9 +10,18 @@ const useUserWithRefresh = () => {
     const {
       data: { user },
     } = await supabase.auth.getUser();
-    console.log(user);
 
-    if (user) setUser(user);
+    const { data } = await supabase
+      .from('users')
+      .select('*')
+      .eq('id', user!.id);
+
+    if (user)
+      setUser({
+        ...user,
+        display_name: data![0].display_name,
+        avatar_url: data![0].avatar_url,
+      });
   };
 
   useEffect(() => {

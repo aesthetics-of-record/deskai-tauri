@@ -9,3 +9,8 @@ export const loginComponentState = atom({
   key: 'loginComponentState',
   default: 'signin',
 });
+
+export const refreshState = atom({
+  key: 'refreshState',
+  default: 0,
+});

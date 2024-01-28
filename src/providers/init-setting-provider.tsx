@@ -8,15 +8,21 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
+import useCommandServer from '@/hooks/useCommandServer';
 import useExists from '@/hooks/useExists';
 import downloadAndSaveFile from '@/lib/download-and-save-file';
+import { emit } from '@tauri-apps/api/event';
 import { BaseDirectory, createDir } from '@tauri-apps/api/fs';
 import { useState } from 'react';
 import { ClipLoader } from 'react-spinners';
 
-const InitSettingProvider = ({ children }: { children: React.ReactNode }) => {
+const InitSettingProvider = ({
+  children,
+}: {
+  children: React.ReactNode;
+}) => {
   const { bool: bool1, checkExists: check1 } = useExists(
-    'extensions/server.exe'
+    'extensions/server' // 우분투에서는 server으로 변경
   );
   const { bool: bool2, checkExists: check2 } = useExists(
     'extensions/prompt.json'
@@ -28,6 +34,9 @@ const InitSettingProvider = ({ children }: { children: React.ReactNode }) => {
 
   const [initDownloadLoading, setInitDownloadLoading] =
     useState<boolean>(false);
+
+  const { commandServerStatus, checkCommandServerStatus } =
+    useCommandServer();
 
   const serverDownloadUrl =
     'https://qjpzemdbvnmikrzvecmd.supabase.co/storage/v1/object/public/extension/public/server.exe';
@@ -41,7 +50,7 @@ const InitSettingProvider = ({ children }: { children: React.ReactNode }) => {
       <div>
         <WindowTitlebar />
 
-        <Card className='m-4'>
+        <Card className="p-4">
           <CardHeader>
             <CardTitle>초기 설정 파일이 필요합니다.</CardTitle>
             <CardDescription>
@@ -52,7 +61,7 @@ const InitSettingProvider = ({ children }: { children: React.ReactNode }) => {
             <div>
               <Button
                 disabled={initDownloadLoading}
-                className='active:scale-95 transition duration-200'
+                className="active:scale-95 transition duration-200"
                 onClick={async () => {
                   setInitDownloadLoading(true);
 
@@ -89,12 +98,18 @@ const InitSettingProvider = ({ children }: { children: React.ReactNode }) => {
                   setProgress(15);
 
                   if (!bool1)
-                    await downloadAndSaveFile(serverDownloadUrl, 'server.exe');
+                    await downloadAndSaveFile(
+                      serverDownloadUrl,
+                      'server.exe'
+                    );
 
                   setProgress(65);
 
                   if (!bool2)
-                    await downloadAndSaveFile(jsonDownloadUrl, 'prompt.json');
+                    await downloadAndSaveFile(
+                      jsonDownloadUrl,
+                      'prompt.json'
+                    );
 
                   setProgress(80);
 
@@ -111,13 +126,19 @@ const InitSettingProvider = ({ children }: { children: React.ReactNode }) => {
                 }}
               >
                 {initDownloadLoading ? (
-                  <ClipLoader color='hsla(168, 67%, 53%, 1)' size={16} />
+                  <ClipLoader
+                    color="hsla(168, 67%, 53%, 1)"
+                    size={16}
+                  />
                 ) : (
                   '다운로드 시작'
                 )}
               </Button>
               {initDownloadLoading ? (
-                <Progress value={progress} className='w-[80%] mt-4' />
+                <Progress
+                  value={progress}
+                  className="w-[80%] mt-4"
+                />
               ) : null}
             </div>
           </CardContent>
@@ -126,7 +147,37 @@ const InitSettingProvider = ({ children }: { children: React.ReactNode }) => {
     );
   }
 
-  //
+  // 기존세팅이 다 되었고 파일들을 가지고 있다면,
+  const onStartServer = async () => {
+    await emit('start-server');
+
+    setTimeout(() => {
+      checkCommandServerStatus();
+    }, 5000);
+
+    setTimeout(() => {
+      checkCommandServerStatus();
+    }, 10000);
+  };
+
+  if (!commandServerStatus) {
+    onStartServer();
+
+    return (
+      <>
+        <div>
+          <WindowTitlebar />
+
+          <Card className="m-4">
+            <CardContent className="p-4">
+              <p>🏃‍♂️커맨드서버 여는중입니다.🚴‍♂️</p>
+              <p className="mt-4">😴잠시만 기다려 주세요.🧐</p>
+            </CardContent>
+          </Card>
+        </div>
+      </>
+    );
+  }
 
   return <>{children}</>;
 };
