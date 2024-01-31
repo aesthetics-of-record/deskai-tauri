@@ -23,7 +23,7 @@ const InitSettingProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const os_name: string = 'ubuntu'; // ubuntu, window
+  const os_name: string = 'window'; // ubuntu, window
 
   const serverName = os_name === 'ubuntu' ? 'server' : 'server.exe';
 
